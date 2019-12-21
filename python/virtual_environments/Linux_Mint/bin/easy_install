@@ -1,4 +1,5 @@
-#!/home/jimmy/Repositories/private/advent-of-code/python/python/virtual_environments/Linux_Mint/bin/python3
+#!/home/jimmy/Repositories/private/advent-of-code/python/virtual_environments/Linux_Mint/bin/python3
+
 # -*- coding: utf-8 -*-
 import re
 import sys
