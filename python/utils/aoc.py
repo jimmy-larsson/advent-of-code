@@ -38,16 +38,14 @@ def setup(year, day):
     YEAR = year
     DAY = day
 
-    session_cookie_path = '../../config/session_cookie'
-    if os.path.isfile(session_cookie_path):
-        with open(session_cookie_path) as file:
-            SESSION_COOKIE = json.load(file)["session-cookie"]
-            SESSION.cookies.set("session", SESSION_COOKIE)
-
     variables_path = '../../config/variables.json'
     if os.path.isfile(variables_path):
         with open(variables_path) as file:
-            USER_AGENT = json.load(file)["user-agent"]
+            config = json.load(file)
+            SESSION_COOKIE = config["session-cookie"]
+            SESSION.cookies.set("session", SESSION_COOKIE)
+
+            USER_AGENT = config["user-agent"]
             SESSION.headers = {"User-Agent": USER_AGENT}
 
 
