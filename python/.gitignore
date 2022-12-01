@@ -1,4 +1,3 @@
 # Python and Pyton solution specific ignores
-session_cookie
 **/cache/
 **/__pycache__/

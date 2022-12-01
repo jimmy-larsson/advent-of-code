@@ -57,7 +57,7 @@ def validate_response(response):
         log_error("")
         sys.exit(1)
     if 'please identify yourself' in response.text.lower():
-        log('An error occurred when attempting to download the file. Please verify that the session_cookie has been '
+        log('An error occurred when attempting to download the file. Please verify that the session-cookie has been '
             'set and updated.\n')
         sys.exit(1)
 
