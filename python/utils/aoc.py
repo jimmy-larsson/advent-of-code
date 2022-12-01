@@ -1,8 +1,11 @@
+import json
 import os
 import sys
 import re
 
 import requests
+
+from bs4 import BeautifulSoup
 
 
 def log(message, *args):
@@ -26,6 +29,7 @@ def setup(year, day):
     global DAY
     global SESSION
     global SESSION_COOKIE
+    global USER_AGENT
 
     if not (year >= 2021 and 1 <= day <= 25):
         log_error("Invalid year or date specified.")
@@ -34,10 +38,17 @@ def setup(year, day):
     YEAR = year
     DAY = day
 
-    if os.path.isfile('session_cookie'):
-        with open('session_cookie') as file:
-            SESSION_COOKIE = file.read().rstrip()
+    session_cookie_path = '../../config/session_cookie'
+    if os.path.isfile(session_cookie_path):
+        with open(session_cookie_path) as file:
+            SESSION_COOKIE = json.load(file)["session-cookie"]
             SESSION.cookies.set("session", SESSION_COOKIE)
+
+    variables_path = '../../config/variables.json'
+    if os.path.isfile(variables_path):
+        with open(variables_path) as file:
+            USER_AGENT = json.load(file)["user-agent"]
+            SESSION.headers = {"User-Agent": USER_AGENT}
 
 
 def validate_response(response):
@@ -106,25 +117,43 @@ def submit_answer(part, answer):
 
     if "that's the right answer" in response:
         log("Good job, that's the right answer!")
+        print_response_from_html(response)
+
         return True
 
     if "you don't seem to be solving the right level" in response:
         log("You don't seem to be solving the right level.  Did you already complete it?")
+        print_response_from_html(response)
+
         return False
 
-    if "you have to wait" in response:
+    if "answer too recently" in response:
         matches = re.compile(r'you have ([\w ]+) left to wait').findall(response)
 
         if matches:
             log('You are submitting too fast. Wait for another {} seconds.\n', matches[0])
         else:
             log('You are submitting too fast!\n')
+        print_response_from_html(response)
 
         return False
+
+    log("That's not the right answer!")
+    print_response_from_html(response)
+
+
+def print_response_from_html(response):
+    try:
+        soup = BeautifulSoup(response, 'html.parser')
+        log("Actual message: {}", soup.article.get_text())
+    except Exception as e:
+        log_error("Failed to parse html for response.")
+        log_error("Actual message {}", str(e))
 
 
 URL = 'https://adventofcode.com/{:d}/day/{:d}/{:s}'
 CACHE_DIR = '../cache/inputs'
+USER_AGENT = ''
 SESSION = requests.Session()
 SESSION_COOKIE = ''
 YEAR = -1
