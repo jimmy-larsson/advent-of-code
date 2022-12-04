@@ -78,7 +78,7 @@ def get_input(filename=None, mode='r'):
             sys.exit(1)
 
     log("Getting input for year {} and day {}...", YEAR, DAY)
-    filename = os.path.join(CACHE_DIR, '{}_{:02d}.txt'.format(YEAR, DAY))
+    filename = os.path.join(CACHE_DIR, 'day{:02d}.txt'.format(DAY))
     try:
         file = open(filename, mode)
         log("Done. File downloaded from cache.")
